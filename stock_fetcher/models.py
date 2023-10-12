@@ -8,12 +8,12 @@ class Stock(models.Model):
     Attributes:
         ticker (str): The stock's ticker symbol, a short identifier.
             Max length is 5 characters.
-        interval (str): The interval at which data is collected for this stock.
-            Max length is 4 characters.
+        current_price (DecimalField): The current price of the stock.
+            Max digits: 5, Decimal places: 2, Default: 0.
     """
 
-    ticker   = models.CharField(max_length=5)
-    interval = models.CharField(max_length=4)
+    ticker        = models.CharField(max_length=5)
+    current_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
 class StockData(models.Model):
     """
@@ -24,20 +24,20 @@ class StockData(models.Model):
         date_time (DateTimeField): The date and time when this data was recorded.
             Defaults to the current datetime if not specified.
         open_price (DecimalField): The opening price of the stock on the recorded date.
-            Max digits: 3, Decimal places: 2, Default: 0.
+            Max digits: 5, Decimal places: 2, Default: 0.
         close_price (DecimalField): The closing price of the stock on the recorded date.
-            Max digits: 3, Decimal places: 2, Default: 0.
+            Max digits: 5, Decimal places: 2, Default: 0.
         high_price (DecimalField): The highest price of the stock on the recorded date.
-            Max digits: 3, Decimal places: 2, Default: 0.
+            Max digits: 5, Decimal places: 2, Default: 0.
         low_price (DecimalField): The lowest price of the stock on the recorded date.
-            Max digits: 3, Decimal places: 2, Default: 0.
+            Max digits: 5, Decimal places: 2, Default: 0.
         volume (IntegerField): The trading volume for the stock on the recorded date.
             Default: 0.
     """
     stock       = models.ForeignKey(Stock, on_delete=models.CASCADE)
     date_time   = models.DateTimeField(default=datetime.now)
-    open_price  = models.DecimalField(max_digits=3, decimal_places=2, default=0)
-    close_price = models.DecimalField(max_digits=3, decimal_places=2, default=0)
-    high_price  = models.DecimalField(max_digits=3, decimal_places=2, default=0)
-    low_price   = models.DecimalField(max_digits=3, decimal_places=2, default=0)
+    open_price  = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    close_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    high_price  = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    low_price   = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     volume      = models.IntegerField(default=0)
