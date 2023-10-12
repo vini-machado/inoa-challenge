@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+import sys
 
 
 class StockFetcherConfig(AppConfig):
@@ -6,6 +7,7 @@ class StockFetcherConfig(AppConfig):
     name = 'stock_fetcher'
 
     def ready(self) -> None:
-        from .utils.stock_handler import StockHandler
-        
-        StockHandler()
+        if 'runserver' in sys.argv:
+            from .utils.stock_handler import StockHandler
+            
+            StockHandler()
