@@ -2,32 +2,37 @@ from datetime import datetime
 import itertools
 import pandas as pd
 import yfinance as yf
+from tqdm import tqdm
 
 from stock_fetcher import INTERVALS, STOCK_LIST_FILE
 from stock_fetcher.models import Stock
 
 class StockHandler:
     def __init__(self) -> None:
-        self.__initialize_stock_model()
+        self.ticker_symbols = self.__get_all_tickers()
 
-    def __initialize_stock_model(self) -> None:
+        if len(Stock.objects.all()) == 0:
+            self.get_current_prices()
+
+    def get_current_prices(self) -> None:
         """
-        Initialize the Stock model by creating database records for all combinations of ticker symbols and intervals.
+        Retrieves the current prices for a list of ticker symbols and updates the database accordingly.
+
+        This function iterates through a list of ticker symbols and obtains the current price for each symbol.
+        It then calls the private method __get_current_price to fetch the current price for each ticker symbol.
+        Subsequently, it utilizes the Stock.create_or_update method to either create a new record or update an existing one 
+        in the database with the obtained ticker symbol and its current price.
+
         Returns:
-            None
+        None. This function does not return any value.
 
-        Note:
-        - This function is meant for initializing the Stock model and should be called
-        when setting up the application or when stock data tracking needs to be initiated.
-        - Existing records in the Stock model will not be modified, and new records will
-        be created.
+        Raises:
+        Any exceptions that occur during the process of fetching or updating prices may be raised and left unhandled.
         """
-        ticker_symbols   = self.__get_all_tickers()
-        ticker_intervals = self.__cross_product_tickers_intervals(ticker_symbols)
-
-        for ticker, interval in ticker_intervals:
-            s = Stock(ticker = ticker, interval = interval)
-            s.save()
+        for ticker in tqdm(self.ticker_symbols):
+            current_price = self.__get_current_price(ticker)
+            
+            Stock.create_or_update(ticker = ticker, current_price = current_price)
 
     def __get_all_tickers(self) -> list[str]:
         """
@@ -49,6 +54,9 @@ class StockHandler:
             ticker_symbols = [ticker.replace("\n", "") + ".SA" for ticker in ticker_symbols]
             return ticker_symbols
         
+    def __get_current_price(self, ticker):
+        return yf.Ticker(ticker).info.get('currentPrice')
+   
     def __cross_product_tickers_intervals(self, ticker_symbols: list[str]) -> tuple[str, str]:
         """
         Generate a cross-product of stock ticker symbols and time intervals.
