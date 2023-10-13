@@ -10,5 +10,5 @@ class StockScheduler:
 
     def start(self):
         scheduler = BackgroundScheduler()
-        scheduler.add_job(self.stock_handler.scheduled_functions, 'interval', minutes=1, max_instances = 1)
+        scheduler.add_job(self.stock_handler.scheduled_functions, 'interval', minutes=2, max_instances = 2)
         scheduler.start()
