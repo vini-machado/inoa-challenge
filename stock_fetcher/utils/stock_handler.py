@@ -39,20 +39,26 @@ class StockHandler:
 
     def __get_all_tickers(self) -> list[str]:
         """
-        Retrieve a list of stock ticker symbols from a file and format them.
+        Retrieves a list of stock tickers from the Brazilian market and processes them.
 
-        Reads stock ticker symbols from a file specified by the constant
-        STOCK_LIST_FILE, one symbol per line, and appends ".SA" to each symbol.
+        This private method utilizes the 'investpy' library to fetch a list of stock tickers from the Brazilian market.
+        It then filters out any tickers that are present in the DELISTED_TICKERS list, and processes the remaining tickers
+        by appending the ".SA" suffix to each ticker symbol.
 
         Returns:
-            list[str]: A list of formatted stock ticker symbols.
+        list[str]: A list of processed stock tickers from the Brazilian market with the ".SA" suffix.
 
-        This function is intended to be used for internal purposes and should not
-        be directly called outside the class.
+        Note:
+        This function requires the 'investpy' library to be installed.
+
+        Raises:
+        Any exceptions that occur during the process of fetching or processing the stock tickers may be raised and left unhandled.
         """
+        all_tickers = inv.stocks.get_stocks_list(country = 'brazil')
+        listed_tickers = [ticker for ticker in all_tickers if ticker not in DELISTED_TICKERS]
 
-        with open(STOCK_LIST_FILE, 'r') as ticker_file:
-            ticker_symbols = ticker_file.readlines()
+        ticker_symbols = [ticker.replace("\n", "") + ".SA" for ticker in listed_tickers]
+        return ticker_symbols
 
             ticker_symbols = [ticker.replace("\n", "") + ".SA" for ticker in ticker_symbols]
             return ticker_symbols
