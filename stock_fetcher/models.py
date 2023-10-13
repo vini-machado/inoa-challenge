@@ -12,8 +12,30 @@ class Stock(models.Model):
             Max digits: 5, Decimal places: 2, Default: 0.
     """
 
-    ticker        = models.CharField(max_length=5)
+    ticker        = models.CharField(max_length=5, unique=True)
     current_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+
+    @classmethod
+    def create_or_update(self, ticker, current_price):
+        """
+        Create a new object if it doesn't exist or update an existing object.
+
+        This method attempts to retrieve an object with the specified 'ticker'.
+        If such an object exists, it updates the 'current_price' with the provided value.
+        If no object with the 'ticker' is found, it creates a new object with the
+        specified 'ticker' and 'current_price'.
+
+        Args:
+            ticker (str): The unique ticker symbol to search for or create.
+            current_price (Decimal): The updated or initial current price for the ticker.
+
+        Returns:
+            YourModel: The created or updated instance of the model.
+        """
+        obj, created = self.objects.get_or_create(ticker=ticker, defaults={'current_price': current_price})
+        if not created:
+            obj.current_price = current_price
+            obj.save()
 
 class StockData(models.Model):
     """
