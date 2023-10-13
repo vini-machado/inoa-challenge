@@ -2,9 +2,10 @@ from datetime import datetime
 import itertools
 import pandas as pd
 import yfinance as yf
-from tqdm import tqdm
+import investpy as inv
+import numpy as np
 
-from stock_fetcher import INTERVALS, STOCK_LIST_FILE
+from stock_fetcher import INTERVALS, DELISTED_TICKERS
 from stock_fetcher.models import Stock
 
 class StockHandler:
@@ -12,9 +13,9 @@ class StockHandler:
         self.ticker_symbols = self.__get_all_tickers()
 
         if len(Stock.objects.all()) == 0:
-            self.get_current_prices()
+            self.__get_current_prices()
 
-    def get_current_prices(self) -> None:
+    def __get_current_prices(self) -> None:
         """
         Retrieves the current prices for a list of ticker symbols and updates the database accordingly.
 
@@ -29,9 +30,10 @@ class StockHandler:
         Raises:
         Any exceptions that occur during the process of fetching or updating prices may be raised and left unhandled.
         """
-        for ticker in tqdm(self.ticker_symbols):
-            current_price = self.__get_current_price(ticker)
-            
+
+        tickers_current_prices = self.__get_tickers_current_price()
+
+        for ticker, current_price in tickers_current_prices:
             Stock.create_or_update(ticker = ticker, current_price = current_price)
 
     def scheduled_functions(self):
@@ -59,12 +61,16 @@ class StockHandler:
 
         ticker_symbols = [ticker.replace("\n", "") + ".SA" for ticker in listed_tickers]
         return ticker_symbols
+    
+    def __get_tickers_current_price(self)-> list[tuple[str, float]]:
+        tickers_data = self.get_stock_data()
+        unstacked_data = tickers_data.unstack()
 
-            ticker_symbols = [ticker.replace("\n", "") + ".SA" for ticker in ticker_symbols]
-            return ticker_symbols
+        def current_price(ticker):
+            price = unstacked_data[ticker]['Close'].iloc[-1]
+            return 0 if np.isnan(price) else price
         
-    def __get_current_price(self, ticker):
-        return yf.Ticker(ticker).info.get('currentPrice')
+        return [(ticker, current_price(ticker)) for ticker in self.ticker_symbols] 
    
     def __cross_product_tickers_intervals(self, ticker_symbols: list[str]) -> tuple[str, str]:
         """
@@ -83,24 +89,28 @@ class StockHandler:
         """
         return tuple(itertools.product(ticker_symbols, INTERVALS))
         
-    def get_stock_data(self, ticker_symbol: str, interval: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
+    def get_stock_data(self, interval: str = '1m', period: str = '1d') -> pd.DataFrame:
         """
-        Retrieve historical stock data for a specific symbol within a date range.
+        Retrieves historical stock data for a list of ticker symbols.
+
+        This function utilizes the yfinance library to retrieve historical stock data for a specified list of ticker symbols.
+        It allows customization of the time interval and the period for which the data is fetched. By default, it fetches data
+        at 1-minute intervals for a 1-day period.
 
         Args:
-            ticker_symbol (str): The stock ticker symbol for which to fetch data.
-            interval (str): The time interval for data collection (e.g., '1d' for daily).
-            start_date (datetime): The start date for data retrieval.
-            end_date (datetime): The end date for data retrieval.
+        self: The instance of the class.
+        interval (str): The time interval at which data is fetched. Default is '1m' (1 minute).
+        period (str): The period for which data is fetched. Default is '1d' (1 day).
 
         Returns:
-            pd.DataFrame: A Pandas DataFrame containing historical stock data.
+        pd.DataFrame: A Pandas DataFrame containing the historical stock data for the specified ticker symbols.
 
-        This function uses the yfinance library to fetch historical stock data for the
-        specified ticker symbol. The data is collected within the given date range and
-        at the specified time interval. The resulting data is returned as a Pandas DataFrame.
+        Note:
+        This function requires the yfinance library to be installed.
 
+        Raises:
+        Any exceptions that occur during the process of fetching the stock data may be raised and left unhandled.
         """
-        stock_data = yf.download(ticker_symbol, start=start_date, end=end_date, interval=interval, progress=False)
+        stock_data = yf.Tickers(self.ticker_symbols).history(interval=interval, period = period, progress=False, group_by = 'ticker', rounding=True)
 
         return stock_data
