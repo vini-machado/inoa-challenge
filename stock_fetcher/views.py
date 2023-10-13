@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.views import View
 import pandas as pd
 from .models import Stock
+from .utils.stock_chart import StockChart
+from .utils.stock_handler import StockHandler
 
 class StocksView(View):
     TEMPLATE_NAME= 'all_stocks.html'
@@ -18,23 +20,28 @@ class StocksView(View):
 
 class StockDataView(View):
     TEMPLATE_NAME= 'stock_data.html'
+    sh = StockHandler()
+
     def get(self, request, ticker, interval):
-        stock_data = self.__stock_data_to_list_of_dicts(ticker, interval)
+        raw_data = self.sh.get_stock_data(ticker, interval)
+        
+        plot_data  = raw_data.reset_index()
+        sc   = StockChart(plot_data)
+        plot = sc.plot()
+         
+        stock_data = self.__stock_data_to_list_of_dicts(raw_data)
         
         context = {
-            'stock_data': stock_data,
             'ticker' : ticker,
+            'stock_data': stock_data,
+            'plot': plot
         }
 
         return render(request, self.TEMPLATE_NAME, context)
     
-    def __stock_data_to_list_of_dicts(self, ticker: str, interval: str) -> list[dict]:
-        from .utils.stock_handler import StockHandler
-
-        sh = StockHandler()
-        stock_data = sh.get_stock_data(ticker, interval)
-        stock_data = self.__modify_raw_data(stock_data)
-
+    def __stock_data_to_list_of_dicts(self, raw_data: pd.DataFrame) -> list[dict]:
+        stock_data = self.__modify_raw_data(raw_data)
+        
         return stock_data.to_dict('records')
 
     def __modify_raw_data(self, raw_data: pd.DataFrame) -> pd.DataFrame:

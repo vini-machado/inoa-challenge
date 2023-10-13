@@ -19,6 +19,7 @@
 </head>
 <body>
     <h1>{{ ticker }}</h1>
+    {% include 'stock_chart.html' with plot=plot %}
     <table>
         <thead>
             <tr>
