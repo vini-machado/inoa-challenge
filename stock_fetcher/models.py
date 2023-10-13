@@ -12,7 +12,7 @@ class Stock(models.Model):
             Max digits: 5, Decimal places: 2, Default: 0.
     """
 
-    ticker        = models.CharField(max_length=6, unique=True)
+    ticker        = models.CharField(max_length=7, unique=True)
     current_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     @classmethod
