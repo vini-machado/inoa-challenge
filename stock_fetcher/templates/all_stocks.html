@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Table</title>
+</head>
+<body>
+    <h1>Stock Table</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Tickers</th>
+                <th>Current Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stocks %}
+            <tr>
+                <td>{{ stock.ticker }}</td>
+                <td>{{ stock.current_price }}</td>
+                <td><button onclick="redirectToStockData('{{ stock.ticker }}')">More Data</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function redirectToStockData(ticker) {
+            window.location.href = `/${ticker}/1m`;
+        }
+    </script>
+</body>
+</html>

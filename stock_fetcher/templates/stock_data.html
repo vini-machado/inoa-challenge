@@ -1,36 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Stock Table</title>
+    <title>Stock Data</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
-    <h1>Stock Table</h1>
+    <h1>Stock Data</h1>
     <table>
         <thead>
             <tr>
-                <th>Tickers</th>
-                <th>Current Price</th>
-                <th>Actions</th>
+                <th>Datetime</th>
+                <th>Open</th>
+                <th>High</th>
+                <th>Low</th>
+                <th>Close</th>
+                <th>Volume (k)</th>
             </tr>
         </thead>
         <tbody>
-            {% for stock in stocks %}
+            {% for data in stock_data %}
             <tr>
-                <td>{{ stock.ticker }}</td>
-                <td>{{ stock.current_price }}</td>
-                <td><button onclick="performAction('{{ stock.ticker }}')">Click</button></td>
+                <td>{{ data.Datetime }}</td>
+                <td>R$ {{ data.Open }}</td>
+                <td>R$ {{ data.High }}</td>
+                <td>R$ {{ data.Low }}</td>
+                <td>R$ {{ data.Close }}</td>
+                <td>{{ data.Volume  }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <script>
-        function performAction(ticker) {
-            // You can define JavaScript logic here to handle the button click for each stock.
-            // For example, you might want to perform an AJAX request or other actions.
-            // You can use the 'ticker' variable to identify the stock.
-            alert("Action for stock with ticker: " + ticker);
-        }
-    </script>
 </body>
 </html>

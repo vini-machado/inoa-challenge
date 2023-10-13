@@ -63,12 +63,15 @@ class StockHandler:
         return ticker_symbols
     
     def __get_tickers_current_price(self)-> list[tuple[str, float]]:
-        tickers_data = self.get_stock_data()
+        tickers_data = self.get_all_stocks_data()
         unstacked_data = tickers_data.unstack()
 
         def current_price(ticker):
-            price = unstacked_data[ticker]['Close'].iloc[-1]
-            return 0 if np.isnan(price) else price
+            prices = unstacked_data[ticker]['Close']
+            valid_prices = prices[~prices.isna()]
+
+
+            return valid_prices.iloc[-1] if not valid_prices.empty else 0
         
         return [(ticker, current_price(ticker)) for ticker in self.ticker_symbols] 
    
@@ -89,7 +92,7 @@ class StockHandler:
         """
         return tuple(itertools.product(ticker_symbols, INTERVALS))
         
-    def get_stock_data(self, interval: str = '1m', period: str = '1d') -> pd.DataFrame:
+    def get_all_stocks_data(self, interval: str = '1m', period: str = '5d') -> pd.DataFrame:
         """
         Retrieves historical stock data for a list of ticker symbols.
 
@@ -112,5 +115,10 @@ class StockHandler:
         Any exceptions that occur during the process of fetching the stock data may be raised and left unhandled.
         """
         stock_data = yf.Tickers(self.ticker_symbols).history(interval=interval, period = period, progress=False, group_by = 'ticker', rounding=True)
+
+        return stock_data
+
+    def get_stock_data(self, ticker: str, interval: str = '1m', period: str = '5d') -> pd.DataFrame:
+        stock_data = yf.Ticker(ticker).history(interval = interval, period = period, rounding=True).reset_index()
 
         return stock_data

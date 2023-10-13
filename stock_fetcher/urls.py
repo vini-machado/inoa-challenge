@@ -1,6 +1,7 @@
 from django.urls import path
-from . import views
+from .views import StocksView, StockDataView
 
 urlpatterns = [
-    path('stock_fetcher/', views.stock_data, name='stock_fetcher'),
+    path('', StocksView.as_view(), name='all_stocks'),
+    path('<str:ticker>/<str:interval>', StockDataView.as_view(), name='stock'),
 ]
