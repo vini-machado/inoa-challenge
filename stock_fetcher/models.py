@@ -13,7 +13,7 @@ class Stock(models.Model):
     """
 
     ticker        = models.CharField(max_length=7, unique=True)
-    current_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    current_price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
     @classmethod
     def create_or_update(self, ticker, current_price):
@@ -58,8 +58,8 @@ class StockData(models.Model):
     """
     stock       = models.ForeignKey(Stock, on_delete=models.CASCADE)
     date_time   = models.DateTimeField(default=datetime.now)
-    open_price  = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    close_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    high_price  = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    low_price   = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    open_price  = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    close_price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    high_price  = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    low_price   = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     volume      = models.IntegerField(default=0)
