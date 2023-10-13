@@ -8,6 +8,7 @@ class StockFetcherConfig(AppConfig):
 
     def ready(self) -> None:
         if 'runserver' in sys.argv:
-            from .utils.stock_handler import StockHandler
-            
-            StockHandler()
+            from .utils.scheduler import StockScheduler
+
+            ss = StockScheduler()
+            ss.start() 

@@ -34,6 +34,9 @@ class StockHandler:
             
             Stock.create_or_update(ticker = ticker, current_price = current_price)
 
+    def scheduled_functions(self):
+        self.__get_current_prices()
+
     def __get_all_tickers(self) -> list[str]:
         """
         Retrieve a list of stock ticker symbols from a file and format them.
