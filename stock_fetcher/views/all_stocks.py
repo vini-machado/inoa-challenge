@@ -6,7 +6,7 @@ from ..models import Stock
 from ..utils.stock_handler import StockHandler
 
 class StockFilterForm(forms.Form):
-    forms = forms.ModelMultipleChoiceField(
+    tickers = forms.ModelMultipleChoiceField(
                 queryset =  Stock.objects.all(),
                 widget   = forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
                 label    =  "Selecione os ativos de interesse"
@@ -50,7 +50,7 @@ class StocksView(View):
         stocks = self.stocks
 
         if form.is_valid():
-            selected_stocks = form.cleaned_data['forms']
+            selected_stocks = form.cleaned_data['tickers']
             stocks = self.stocks.filter(id__in=selected_stocks)
 
         return stocks, form
