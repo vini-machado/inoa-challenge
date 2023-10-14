@@ -5,6 +5,11 @@
 </head>
 <body>
     <h1>Stock Table</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Filtrar</button>
+    </form>
     <table>
         <thead>
             <tr>
