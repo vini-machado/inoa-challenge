@@ -8,7 +8,7 @@ from ..utils.stock_handler import StockHandler
 class StockFilterForm(forms.Form):
     forms = forms.ModelMultipleChoiceField(
                 queryset =  Stock.objects.all(),
-                widget   = forms.SelectMultiple,
+                widget   = forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
                 label    =  "Selecione os ativos de interesse"
     )
 
