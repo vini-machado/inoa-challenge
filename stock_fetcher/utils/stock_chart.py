@@ -5,7 +5,16 @@ import pandas as pd
 
 class StockChart:
     def __init__(self, stock_data: pd.DataFrame) -> None:
-        self.stock_data = stock_data
+        self.stock_data, self.more_than_1d = self.__fix_datetime_column_name(stock_data)
+
+
+    def __fix_datetime_column_name(self, stock_data: pd.DataFrame):
+        if 'Date' in stock_data.columns:
+            stock_data['Datetime'] = stock_data['Date']
+            stock_data.drop('Date', axis = 1, inplace = True)
+
+            return stock_data, True
+        return stock_data, False
 
     def __subplots(self):
         properties =  {
@@ -36,10 +45,11 @@ class StockChart:
             )
 
     def __remove_closed_market_datetimes(self, fig):
+        day_break = dict(bounds=[17, 10], pattern="hour") if not self.more_than_1d else dict()
         return fig.update_xaxes(
                 rangebreaks=[
                     dict(bounds=["sat", "mon"]), #hide weekends
-                    dict(bounds=[17, 10], pattern="hour"), #hide hours outside of 9am-5pm
+                    day_break, #hide hours outside of 9am-5pm
                 ]
             )      
     
