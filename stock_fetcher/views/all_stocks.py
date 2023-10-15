@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views import View
 from django import forms
 from ..models import Stock
-from ..utils.stock_handler import StockHandler
+from monitoring.models import UserStock
 
 class StockFilterForm(forms.Form):
     tickers = forms.ModelMultipleChoiceField(
@@ -23,13 +23,23 @@ class StocksView(View):
 
     ############################# GET ##################################
     def get(self, request):
-        self.__get_context()
+        self.__get_context(request)
 
         return render(request, self.template_name, self.context)
 
-    def __get_context(self):
-        self.context['stocks'] = self.stocks
-        self.context['form']   = StockFilterForm()
+    def __get_context(self, request):
+        user_stocks__stocks, selected_tickers = self.__get_user_stocks(request)
+        self.context['stocks'] = user_stocks__stocks
+        self.context['form']   = StockFilterForm(initial={'tickers': selected_tickers})
+    
+        
+    def __get_user_stocks(self, request):
+        user_stocks__stocks = self.stocks.filter(userstock__user = request.user)
+        if user_stocks__stocks.exists():
+            return user_stocks__stocks, user_stocks__stocks
+
+        return self.stocks, {}
+
     ############################# GET ##################################
 
 
@@ -52,6 +62,12 @@ class StocksView(View):
         if form.is_valid():
             selected_stocks = form.cleaned_data['tickers']
             stocks = self.stocks.filter(id__in=selected_stocks)
-
+            
+            self.__save_user_stocks(stocks, request)
         return stocks, form
+    
+    def __save_user_stocks(self, stocks, request):
+        for stock in stocks:
+            user_stocks = UserStock(user = request.user, stock = stock)
+            user_stocks.create_or_update(user = request.user, stock = stock)
     ############################# POST ##################################
