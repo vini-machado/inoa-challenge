@@ -1,2 +1,5 @@
-Django == 4.2.6
+Django   == 4.2.6
 yfinance == 0.2.31
+apscheduler == 3.10.4
+plotly      == 5.17.0
+investpy == 1.0.8

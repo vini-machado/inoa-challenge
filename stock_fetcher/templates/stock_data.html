@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ ticker }}</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ ticker }}</h1>
+    <form method="get">
+      <div class="row">
+          <div class="col-md-6">
+              <label for="{{ form.interval.id_for_label }}" class="form-label">{{ form.interval.label }}</label>
+              {{ form.interval }}
+          </div>
+          <div class="col-md-6">
+              <label for="{{ form.period.id_for_label }}" class="form-label">{{ form.period.label }}</label>
+              {{ form.period }}
+          </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Filter</button>
+    </form>
+    <div class="row">
+        <div class="col-md-12">
+            {% include 'stock_chart.html' with plot=plot %}
+        </div>
+      </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Datetime</th>
+                <th>Open</th>
+                <th>High</th>
+                <th>Low</th>
+                <th>Close</th>
+                <th>Volume (k)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in stock_data %}
+            <tr>
+                <td>{{ data.Datetime }}</td>
+                <td>R$ {{ data.Open }}</td>
+                <td>R$ {{ data.High }}</td>
+                <td>R$ {{ data.Low }}</td>
+                <td>R$ {{ data.Close }}</td>
+                <td>{{ data.Volume  }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
