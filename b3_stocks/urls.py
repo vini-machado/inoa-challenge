@@ -20,4 +20,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('stocks/', include('stock_fetcher.urls')),
+
+    # path('authentication/', include('django.contrib.auth.urls')),
+    path('authentication/', include('authentication.urls')),
 ]
