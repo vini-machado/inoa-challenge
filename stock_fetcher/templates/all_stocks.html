@@ -5,7 +5,12 @@
 </head>
 <body>
     <h1>Stock Table</h1>
-    {{ user.is_authenticated }}
+    {% if user.is_authenticated %}
+        <h2>Autenticado</h2>
+        <a class="nav-link" href="{% url 'logout' %}"> Logout </a>
+    {% else %}
+        <h2>Não Autenticado! Sai Daqui!!!</h2>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
         {{ form.as_table }}
