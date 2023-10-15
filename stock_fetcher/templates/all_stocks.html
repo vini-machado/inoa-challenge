@@ -5,6 +5,7 @@
 </head>
 <body>
     <h1>Stock Table</h1>
+    {{ user.is_authenticated }}
     <form method="post">
         {% csrf_token %}
         {{ form.as_table }}
