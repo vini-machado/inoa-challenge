@@ -1,5 +1,5 @@
 from typing import Any
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views import View
 from django import forms
 from ..models import Stock
@@ -28,17 +28,19 @@ class StocksView(View):
         return render(request, self.template_name, self.context)
 
     def __get_context(self, request):
-        user_stocks__stocks, selected_tickers = self.__get_user_stocks(request)
-        self.context['stocks'] = user_stocks__stocks
+        user_stocks, selected_tickers = self.__get_user_stocks(request)
+        self.context['stocks'] = user_stocks
         self.context['form']   = StockFilterForm(initial={'tickers': selected_tickers})
     
         
     def __get_user_stocks(self, request):
-        user_stocks__stocks = self.stocks.filter(userstock__user = request.user)
-        if user_stocks__stocks.exists():
-            return user_stocks__stocks, user_stocks__stocks
+        selected_tickers = self.stocks.filter(userstock__user = request.user)
+        user_stocks = UserStock.objects.filter(user = request.user)
+        
+        if selected_tickers.exists():
+            return user_stocks, selected_tickers
 
-        return self.stocks, {}
+        return dict(), dict()
 
     ############################# GET ##################################
 
@@ -47,7 +49,7 @@ class StocksView(View):
     def post(self, request):
         self.__post_context(request)
 
-        return render(request, self.template_name, self.context)
+        return redirect(request.get_full_path())
 
     def __post_context(self, request):
         stocks, form = self.__filter_stocks(request)

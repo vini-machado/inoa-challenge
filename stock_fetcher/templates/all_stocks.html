@@ -34,16 +34,22 @@
         <thead>
             <tr>
                 <th>Tickers</th>
+                <th>Tunnel Minimum</th>
                 <th>Current Price</th>
+                <th>Tunnel Maximum</th>
+                <th>Price Check Periodicity</th>
                 <th>Graphs</th>
             </tr>
         </thead>
         <tbody>
             {% for stock in stocks %}
             <tr>
-                <td>{{ stock.ticker }}</td>
-                <td>{{ stock.current_price }}</td>
-                <td><button onclick="redirectToStockData('{{ stock.ticker }}')">More Data</button></td>
+                <td>{{ stock.stock.ticker }}</td>
+                <td>{{ stock.min_price }}</td>
+                <td>{{ stock.stock.current_price }}</td>
+                <td>{{ stock.max_price }}</td>
+                <td>{{ stock.periodicity }}</td>
+                <td><button onclick="redirectToStockData('{{ stock.stock.ticker }}')">More Data</button></td>
             </tr>
             {% endfor %}
         </tbody>
