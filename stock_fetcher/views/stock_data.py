@@ -11,7 +11,6 @@ from ..utils.stock_handler import StockHandler
 from ..utils.stock_chart import StockChart
 from stock_fetcher import INTERVALS, PERIODS
 from monitoring.models import UserStock
-from ..models import Stock
 
 class TimeForm(forms.Form):
     interval = forms.ChoiceField(choices = INTERVALS,
@@ -23,8 +22,12 @@ class TimeForm(forms.Form):
                                     label="Select Time Period")
     
 class TunnelPriceForm(forms.Form):
-    max_price = forms.DecimalField(label="Select Tunnel Maximum Price")
-    min_price = forms.DecimalField(label="Select Tunnel Minimum Price")
+    max_price     = forms.DecimalField(label="Select Tunnel Maximum Price")
+    min_price     = forms.DecimalField(label="Select Tunnel Minimum Price")
+
+    periodicity   = forms.ChoiceField(choices = INTERVALS,
+                                widget=forms.Select(attrs={'class': 'form-select'}),
+                                label="Select Price Check Period")
 
 
 class StockDataView(View):
@@ -35,7 +38,7 @@ class StockDataView(View):
         self.sh            = StockHandler()
         self.context       = dict()
         self.ticker        = None
-        self.interval      = '1m'
+        self.interval      = '5m'
         self.period        = '5d'
         self.user_stock    = None
 
@@ -51,8 +54,8 @@ class StockDataView(View):
         
     ############################### GET CONTEXT ##################################
     def __define_context(self, request):
-        raw_data, table_data = self.__handle_stock_data()
-        tunnel_prices        = self.__price_tunnel_context(request)
+        raw_data, table_data         = self.__handle_stock_data()
+        tunnel_prices, self.interval = self.__price_tunnel_context(request)
 
         self.context['plot']             = self.__plot_context(raw_data)
         self.context['ticker']           = self.ticker
@@ -76,11 +79,12 @@ class StockDataView(View):
             self.user_stock = user_stock.first()
             max_price       = float(self.user_stock.max_price)
             min_price       = float(self.user_stock.min_price)
+            periodicity     = self.user_stock.periodicity
 
-            return { 'max_price': max_price, 'min_price': min_price }
+            return { 'max_price': max_price, 'min_price': min_price, 'periodicity': periodicity }, periodicity
 
-        return  { 'max_price': 0, 'min_price': 0 }
-
+        return  { 'max_price': 0, 'min_price': 0, 'periodicity': self.interval }, self.interval
+    
     ############################### GET CONTEXT ##################################
 
 
@@ -118,7 +122,7 @@ class StockDataView(View):
 
             self.user_stock.max_price   = request.POST.get('max_price')
             self.user_stock.min_price   = request.POST.get('min_price')
-            self.user_stock.periodicity = self.period
+            self.user_stock.periodicity = request.POST.get('periodicity')
 
             self.user_stock.save()
             messages.success(request = request, message = "Success Registration")
