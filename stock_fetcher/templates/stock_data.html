@@ -20,18 +20,33 @@
 <body>
     <h1>{{ ticker }}</h1>
     <form method="get">
+        {% csrf_token %}
       <div class="row">
-          <div class="col-md-6">
-              <label for="{{ form.interval.id_for_label }}" class="form-label">{{ form.interval.label }}</label>
-              {{ form.interval }}
+          <div class="col-md-4">
+              <label for="{{ graph_properties.interval.id_for_label }}" class="form-label">{{ graph_properties.interval.label }}</label>
+              {{ graph_properties.interval }}
           </div>
-          <div class="col-md-6">
-              <label for="{{ form.period.id_for_label }}" class="form-label">{{ form.period.label }}</label>
-              {{ form.period }}
+          <div class="col-md-4">
+              <label for="{{ graph_properties.period.id_for_label }}" class="form-label">{{ graph_properties.period.label }}</label>
+              {{ graph_properties.period }}
           </div>
       </div>
-      <button type="submit" class="btn btn-primary mt-3">Filter</button>
+      <button type="submit" class="btn btn-primary mt-3">Filter Time</button>
     </form>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-4">
+                <label for="{{ price_tunnel.max_price.id_for_label }}" class="form-label">{{ price_tunnel.max_price.label }}</label>
+                {{ price_tunnel.max_price }}
+            </div>
+            <div class="col-md-4">
+                <label for="{{ price_tunnel.min_price.id_for_label }}" class="form-label">{{ price_tunnel.min_price.label }}</label>
+                {{ price_tunnel.min_price }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Define tunnel</button>
+      </form>
     <div class="row">
         <div class="col-md-12">
             {% include 'stock_chart.html' with plot=plot %}
