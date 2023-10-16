@@ -4,6 +4,8 @@
     <title>Stock Table</title>
     <style>
         table {
+            margin-left: auto;
+            margin-right: auto;
             border-collapse: collapse;
             width: 100%;
         }
@@ -39,6 +41,7 @@
                 <th>Tunnel Maximum</th>
                 <th>Price Check Periodicity</th>
                 <th>Graphs</th>
+                <th>Cancel Monitoring</th>
             </tr>
         </thead>
         <tbody>
@@ -50,6 +53,13 @@
                 <td>{{ stock.max_price }}</td>
                 <td>{{ stock.periodicity }}</td>
                 <td><button onclick="redirectToStockData('{{ stock.stock.ticker }}')">More Data</button></td>
+                <td>
+                    <form method="post" action="{% url 'delete_user_stock' stock.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+
             </tr>
             {% endfor %}
         </tbody>
