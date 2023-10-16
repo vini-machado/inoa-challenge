@@ -11,7 +11,7 @@ class UserStock(models.Model):
     periodicity = models.CharField(max_length=3, null=True, default = '5m')
 
     @classmethod
-    def create_or_update(self, user, stock, max_price = 0, min_price = 0, periodicity = None):
+    def create_or_update(self, user, stock, max_price = -1, min_price = -1, periodicity = '-'):
         defaults = {
             'max_price' : max_price,
             'min_price' : min_price,
@@ -20,8 +20,13 @@ class UserStock(models.Model):
 
         obj, created = self.objects.get_or_create(user=user, stock=stock, defaults=defaults)
         if not created:
-            obj.max_price = defaults.get('max_price')
-            obj.min_price = defaults.get('min_price')
-            obj.periodicity = defaults.get('periodicity')
+            if defaults.get('max_price') != -1:
+                obj.max_price   = defaults.get('max_price')
+
+            if defaults.get('min_price') != -1:
+                obj.min_price   = defaults.get('min_price')
+
+            if defaults.get('periodicity') != '-':
+                obj.periodicity = defaults.get('periodicity')
             
             obj.save()
