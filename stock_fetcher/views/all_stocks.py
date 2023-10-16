@@ -9,7 +9,7 @@ class StockFilterForm(forms.Form):
     tickers = forms.ModelMultipleChoiceField(
                 queryset =  Stock.objects.all(),
                 widget   = forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-                label    =  "Selecione os ativos de interesse"
+                label    =  "Selecione os ativos de para monitorar"
     )
 
 class StocksView(View):
