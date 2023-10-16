@@ -8,7 +8,7 @@ class UserStock(models.Model):
     
     max_price = models.DecimalField(max_digits=6, decimal_places=2, default = 0)
     min_price = models.DecimalField(max_digits=6, decimal_places=2, default = 0)
-    periodicity = models.CharField(max_length=3, null=True)
+    periodicity = models.CharField(max_length=3, null=True, default = '5m')
 
     @classmethod
     def create_or_update(self, user, stock, max_price = 0, min_price = 0, periodicity = None):
