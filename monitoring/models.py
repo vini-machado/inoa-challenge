@@ -18,7 +18,7 @@ class UserStock(models.Model):
             'periodicity' : periodicity
         }
 
-        obj, created = self.objects.get_or_create(user=user, stock=stock, defaults=defaults)
+        obj, created = self.objects.get_or_create(user=user, stock=stock)
         if not created:
             if defaults.get('max_price') != -1:
                 obj.max_price   = defaults.get('max_price')
