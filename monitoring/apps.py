@@ -9,6 +9,7 @@ class MonitoringConfig(AppConfig):
     def ready(self) -> None:
         if 'runserver' in sys.argv:
             from .views import Monitoring
+            scheduler = BackgroundScheduler()
             m = Monitoring()
 
-            m.execute()
+            m.execute(scheduler)
