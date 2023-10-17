@@ -38,11 +38,16 @@ class Email:
             subject = self.__subject(email_msg['action'])
             message = self.__message(email_msg['action'], email_msg['Ticker'])
 
-        send_mail(
-            subject,
-            message,
-            settings.EMAIL_HOST_USER,
-            email,
-            fail_silently=False,
-        )
+            try: 
+                send_mail(
+                    subject,
+                    message,
+                    settings.EMAIL_HOST_USER,
+                    email,
+                    fail_silently=False,
+                )
+
+                
+            except Exception as e:
+
 
