@@ -63,7 +63,7 @@ class StockHandler:
         return ticker_symbols
     
     def __get_tickers_current_price(self)-> list[tuple[str, float]]:
-        tickers_data = self.get_all_stocks_data()
+        tickers_data = self.get_stocks_data(self.ticker_symbols)
         unstacked_data = tickers_data.unstack()
 
         def current_price(ticker):
@@ -73,7 +73,22 @@ class StockHandler:
 
             return valid_prices.iloc[-1] if not valid_prices.empty else 0
         
-        return [(ticker, current_price(ticker)) for ticker in self.ticker_symbols] 
+        return [(ticker, current_price(ticker)) for ticker in self.ticker_symbols]
+    
+    def get_tickers_high_low_prices(self, periodicity: str, ticker_list: list[str]) -> pd.DataFrame:
+        tickers_data: pd.DataFrame = yf.Tickers(ticker_list).history(interval=periodicity, period = '1d', progress=False, group_by = 'ticker', rounding=True)
+
+        unstacked_data = tickers_data.unstack()
+        unstacked_data.index.set_names(['ticker', 'Metric', 'Datetime'], inplace=True)
+
+        data = unstacked_data.unstack(level='Metric').reset_index()
+        data = data[['ticker', 'Datetime', 'High', 'Low']]
+
+        sorted_data = data.sort_values(by='Datetime', ascending=False)
+
+        # Keep only the first row for each 'ticker'
+        most_recent_data = sorted_data.groupby('ticker').first().reset_index()
+        return most_recent_data[['ticker', 'High', 'Low']]
    
     def __cross_product_tickers_intervals(self, ticker_symbols: list[str]) -> tuple[str, str]:
         """
@@ -92,7 +107,7 @@ class StockHandler:
         """
         return tuple(itertools.product(ticker_symbols, INTERVALS))
         
-    def get_all_stocks_data(self, interval: str = '1m', period: str = '5d') -> pd.DataFrame:
+    def get_stocks_data(self, ticker_symbols: list[str], interval: str = '1m', period: str = '5d') -> pd.DataFrame:
         """
         Retrieves historical stock data for a list of ticker symbols.
 
@@ -114,7 +129,7 @@ class StockHandler:
         Raises:
         Any exceptions that occur during the process of fetching the stock data may be raised and left unhandled.
         """
-        stock_data = yf.Tickers(self.ticker_symbols).history(interval=interval, period = period, progress=False, group_by = 'ticker', rounding=True)
+        stock_data = yf.Tickers(ticker_symbols).history(interval=interval, period = period, progress=False, group_by = 'ticker', rounding=True)
 
         return stock_data
 
