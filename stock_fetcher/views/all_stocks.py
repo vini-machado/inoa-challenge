@@ -4,6 +4,7 @@ from django.views import View
 from django import forms
 from ..models import Stock
 from monitoring.models import UserStock
+from stock_fetcher.utils.stock_handler import StockHandler
 
 class StockFilterForm(forms.Form):
     tickers = forms.ModelMultipleChoiceField(
@@ -17,12 +18,13 @@ class StocksView(View):
         super().__init__(**kwargs)
 
         self.template_name = 'all_stocks.html'
-        self.stocks = Stock.objects.all()
+        self.stocks  = Stock.objects.all()
         self.context = dict()
 
 
     ############################# GET ##################################
     def get(self, request):
+        self.__update_current_prices(request)
         self.__get_context(request)
 
         return render(request, self.template_name, self.context)
@@ -31,16 +33,21 @@ class StocksView(View):
         user_stocks, selected_tickers = self.__get_user_stocks(request)
         self.context['stocks'] = user_stocks
         self.context['form']   = StockFilterForm(initial={'tickers': selected_tickers})
-    
-        
+
     def __get_user_stocks(self, request):
         selected_tickers = self.stocks.filter(userstock__user = request.user)
         user_stocks = UserStock.objects.filter(user = request.user)
-        
+
         if selected_tickers.exists():
             return user_stocks, selected_tickers
 
         return dict(), dict()
+
+    def __update_current_prices(self, request):
+        stocks = Stock.objects.filter(userstock__user = request.user)
+        selected_tickers = list(stocks.values_list('ticker', flat = True))
+
+        StockHandler(selected_tickers).get_current_prices()
 
     ############################# GET ##################################
 
