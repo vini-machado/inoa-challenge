@@ -1,15 +1,16 @@
 from typing import Any
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views import View
 from django import forms
 from ..models import Stock
-from ..utils.stock_handler import StockHandler
+from monitoring.models import UserStock
+from stock_fetcher.utils.stock_handler import StockHandler
 
 class StockFilterForm(forms.Form):
     tickers = forms.ModelMultipleChoiceField(
                 queryset =  Stock.objects.all(),
                 widget   = forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-                label    =  "Selecione os ativos de interesse"
+                label    =  "Selecione os ativos de para monitorar"
     )
 
 class StocksView(View):
@@ -17,19 +18,37 @@ class StocksView(View):
         super().__init__(**kwargs)
 
         self.template_name = 'all_stocks.html'
-        self.stocks = Stock.objects.all()
+        self.stocks  = Stock.objects.all()
         self.context = dict()
 
 
     ############################# GET ##################################
     def get(self, request):
-        self.__get_context()
+        self.__update_current_prices(request)
+        self.__get_context(request)
 
         return render(request, self.template_name, self.context)
 
-    def __get_context(self):
-        self.context['stocks'] = self.stocks
-        self.context['form']   = StockFilterForm()
+    def __get_context(self, request):
+        user_stocks, selected_tickers = self.__get_user_stocks(request)
+        self.context['stocks'] = user_stocks
+        self.context['form']   = StockFilterForm(initial={'tickers': selected_tickers})
+
+    def __get_user_stocks(self, request):
+        selected_tickers = self.stocks.filter(userstock__user = request.user)
+        user_stocks = UserStock.objects.filter(user = request.user)
+
+        if selected_tickers.exists():
+            return user_stocks, selected_tickers
+
+        return dict(), dict()
+
+    def __update_current_prices(self, request):
+        stocks = Stock.objects.filter(userstock__user = request.user)
+        selected_tickers = list(stocks.values_list('ticker', flat = True))
+
+        StockHandler(selected_tickers).get_current_prices()
+
     ############################# GET ##################################
 
 
@@ -37,7 +56,7 @@ class StocksView(View):
     def post(self, request):
         self.__post_context(request)
 
-        return render(request, self.template_name, self.context)
+        return redirect(request.get_full_path())
 
     def __post_context(self, request):
         stocks, form = self.__filter_stocks(request)
@@ -52,6 +71,12 @@ class StocksView(View):
         if form.is_valid():
             selected_stocks = form.cleaned_data['tickers']
             stocks = self.stocks.filter(id__in=selected_stocks)
-
+            
+            self.__save_user_stocks(stocks, request)
         return stocks, form
+    
+    def __save_user_stocks(self, stocks, request):
+        for stock in stocks:
+            user_stocks = UserStock(user = request.user, stock = stock)
+            user_stocks.create_or_update(user = request.user, stock = stock)
     ############################# POST ##################################
