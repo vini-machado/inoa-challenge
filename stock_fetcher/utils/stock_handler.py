@@ -64,7 +64,7 @@ class StockHandler:
         return ticker_symbols
     
     def __get_tickers_current_price(self)-> list[tuple[str, float]]:
-        data = yq.Ticker(self.ticker_symbols, asynchronous = True).history(period="1d", interval="1m").reset_index()
+        data = yq.Ticker(self.ticker_symbols, asynchronous = True, max_workers = 100).history(period="1d", interval="1m").reset_index()
         data = self.__format_yq_dataframe(data)
 
         current_price = data.groupby('Ticker').last()['Close'].to_frame().reset_index()
@@ -73,7 +73,7 @@ class StockHandler:
     
     
     def get_tickers_high_low_prices(self, periodicity: str, ticker_list: list[str]) -> pd.DataFrame:
-        data = yq.Ticker(ticker_list, asynchronous = True).history(period="1d", interval=periodicity).reset_index()
+        data = yq.Ticker(ticker_list, asynchronous = True, max_workers = 100).history(period="1d", interval=periodicity).reset_index()
         data = self.__format_yq_dataframe(data)
 
         sorted_data = data.sort_values(by='Datetime', ascending=False)

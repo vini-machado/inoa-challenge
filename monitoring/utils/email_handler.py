@@ -46,3 +46,4 @@ class Email:
                 fail_silently=False,
             )
 
+            

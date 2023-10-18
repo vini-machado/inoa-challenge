@@ -46,8 +46,9 @@ class StocksView(View):
     def __update_current_prices(self, request):
         stocks = Stock.objects.filter(userstock__user = request.user)
         selected_tickers = list(stocks.values_list('ticker', flat = True))
-
-        StockHandler(selected_tickers).get_current_prices()
+        
+        if not selected_tickers:
+            StockHandler(selected_tickers).get_current_prices()
 
     ############################# GET ##################################
 
