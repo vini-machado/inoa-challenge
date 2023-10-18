@@ -1,6 +1,8 @@
 import pandas as pd
 from ..models import UserStock
+from warnings import filterwarnings
 
+filterwarnings('ignore')
 
 class TunnelPrice:
     def __init__(self, current_high_low: pd.DataFrame) -> None:
