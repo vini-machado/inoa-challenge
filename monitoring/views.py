@@ -30,18 +30,15 @@ class Monitoring:
         return TunnelPrice(current_high_low).actions
     
     def send_email(self, periodicity: str, ticker_list: list[str]):
+        print(f'Monitoramento {periodicity} em andamento...')
         tunnel_actions = self.tunnel_actions(periodicity, ticker_list)
         Email(tunnel_actions).send()
-        
-    def __job_minutes(self, minutes: int) -> int:
-        if minutes < 30:
-            return minutes + 2
-        return minutes + 1
+        print(f'Monitoramento {periodicity} finalizado!')
 
     def execute(self, scheduler):
         for periodicity, tickers in self.period_tickers.items():
             minutes = self.period_minutes[periodicity]
 
-            scheduler.add_job(self.send_email, args = [periodicity, tickers], trigger = 'interval', minutes = self.__job_minutes(minutes), max_instances = 2)
+            scheduler.add_job(self.send_email, args = [periodicity, tickers], trigger = 'interval', minutes = minutes, max_instances = 2)
 
         scheduler.start()
