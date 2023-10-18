@@ -38,7 +38,6 @@ class Email:
             subject = self.__subject(email_msg['action'])
             message = self.__message(email_msg['action'], email_msg['Ticker'])
 
-
             send_mail(
                 subject,
                 message,

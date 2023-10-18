@@ -1,7 +1,7 @@
 from datetime import datetime
 import itertools
 import pandas as pd
-import yfinance as yf
+import yahooquery as yq
 import investpy as inv
 import numpy as np
 
@@ -64,77 +64,42 @@ class StockHandler:
         return ticker_symbols
     
     def __get_tickers_current_price(self)-> list[tuple[str, float]]:
-        tickers_data = self.get_stocks_data(self.ticker_symbols)
-        unstacked_data = tickers_data.unstack()
+        data = yq.Ticker(self.ticker_symbols, asynchronous = True).history(period="1d", interval="1m").reset_index()
+        data = self.__format_yq_dataframe(data)
 
-        def current_price(ticker):
-            prices = unstacked_data[ticker]['Close']
-            valid_prices = prices[~prices.isna()]
+        current_price = data.groupby('Ticker').last()['Close'].to_frame().reset_index()
 
-
-            return valid_prices.iloc[-1] if not valid_prices.empty else 0
-        
-        return [(ticker, current_price(ticker)) for ticker in self.ticker_symbols]
+        return list(current_price.itertuples(index=False, name=None))
+    
     
     def get_tickers_high_low_prices(self, periodicity: str, ticker_list: list[str]) -> pd.DataFrame:
-        tickers_data = yf.Tickers(ticker_list).download(interval=periodicity, period = '2d', progress=False, group_by = 'ticker', rounding=True)
-
-        unstacked_data = tickers_data.unstack()
-        unstacked_data.index.set_names(['Ticker', 'Metric', 'Datetime'], inplace=True)
-
-        data = unstacked_data.unstack(level='Metric').reset_index()
-        data = data[['Ticker', 'Datetime', 'High', 'Low']]
+        data = yq.Ticker(ticker_list, asynchronous = True).history(period="1d", interval=periodicity).reset_index()
+        data = self.__format_yq_dataframe(data)
 
         sorted_data = data.sort_values(by='Datetime', ascending=False)
 
         # Keep only the first row for each 'Ticker'
         most_recent_data = sorted_data.groupby('Ticker').first().reset_index()
         return most_recent_data[['Ticker', 'High', 'Low']]
-   
-    def __cross_product_tickers_intervals(self, ticker_symbols: list[str]) -> tuple[str, str]:
-        """
-        Generate a cross-product of stock ticker symbols and time intervals.
-
-        Args:
-            ticker_symbols (list[str]): A list of stock ticker symbols to combine.
-        
-        Returns:
-            tuple[str, str]: A tuple of cross-product combinations containing stock ticker
-            symbols and predefined time intervals.
-
-        This function is intended for internal use and should not be directly called
-        outside the class.
-
-        """
-        return tuple(itertools.product(ticker_symbols, INTERVALS))
-        
-    def get_stocks_data(self, ticker_symbols: list[str], interval: str = '1m', period: str = '5d') -> pd.DataFrame:
-        """
-        Retrieves historical stock data for a list of ticker symbols.
-
-        This function utilizes the yfinance library to retrieve historical stock data for a specified list of ticker symbols.
-        It allows customization of the time interval and the period for which the data is fetched. By default, it fetches data
-        at 1-minute intervals for a 1-day period.
-
-        Args:
-        self: The instance of the class.
-        interval (str): The time interval at which data is fetched. Default is '1m' (1 minute).
-        period (str): The period for which data is fetched. Default is '1d' (1 day).
-
-        Returns:
-        pd.DataFrame: A Pandas DataFrame containing the historical stock data for the specified ticker symbols.
-
-        Note:
-        This function requires the yfinance library to be installed.
-
-        Raises:
-        Any exceptions that occur during the process of fetching the stock data may be raised and left unhandled.
-        """
-        stock_data = yf.Tickers(ticker_symbols).history(interval=interval, period = period, progress=False, group_by = 'ticker', rounding=True)
-
-        return stock_data
 
     def get_stock_data(self, ticker: str, interval: str = '1m', period: str = '5d') -> pd.DataFrame:
-        stock_data = yf.Ticker(ticker).history(interval = interval, period = period, rounding=True).reset_index()
+        data = yq.Ticker(ticker).history(interval = interval, period = period).reset_index()
+        data = self.__format_yq_dataframe(data)
 
-        return stock_data
+        return data[['Datetime', 'Open', 'High', 'Low', 'Close', 'Volume']]
+    
+
+    def __format_yq_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
+        df = df.round(2)
+        df.rename({
+            
+            'symbol': 'Ticker',
+            'date': 'Datetime',
+            'open': 'Open',
+            'high': 'High',
+            'low': 'Low',
+            'close'	: 'Close',
+            'volume': 'Volume',
+        }, axis = 1, inplace = True)
+
+        return df
