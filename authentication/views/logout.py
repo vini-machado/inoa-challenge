@@ -3,7 +3,7 @@ from django.views import View
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, logout
 from django.contrib import messages
-from . import LOGIN_HTML, LOGIN_URL, STOCKS_URL
+from . import LOGIN_HTML, LOGIN_URL
 
 
 def log_out(request):
