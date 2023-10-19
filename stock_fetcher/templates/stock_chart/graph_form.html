@@ -1,0 +1,15 @@
+<form method="get">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-3">
+            <label for="{{ graph_properties.interval.id_for_label }}" class="form-label">{{ graph_properties.interval.label }}</label>
+            {{ graph_properties.interval }}
+        </div>
+        <div class="col-md-3">
+            <label for="{{ graph_properties.period.id_for_label }}" class="form-label">{{ graph_properties.period.label }}</label>
+            {{ graph_properties.period }}
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Filter Time</button>
+    </div>
+</form>
+<br/>

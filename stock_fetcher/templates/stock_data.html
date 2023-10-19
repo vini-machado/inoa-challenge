@@ -1,84 +1,35 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ ticker }}</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body>
-    <h1>{{ ticker }}</h1>
-    <form method="get">
-        {% csrf_token %}
-      <div class="row">
-          <div class="col-md-4">
-              <label for="{{ graph_properties.interval.id_for_label }}" class="form-label">{{ graph_properties.interval.label }}</label>
-              {{ graph_properties.interval }}
-          </div>
-          <div class="col-md-4">
-              <label for="{{ graph_properties.period.id_for_label }}" class="form-label">{{ graph_properties.period.label }}</label>
-              {{ graph_properties.period }}
-          </div>
-      </div>
-      <button type="submit" class="btn btn-primary mt-3">Filter Time</button>
-    </form>
-    <form method="post">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-md-4">
-                <label for="{{ price_tunnel.max_price.id_for_label }}" class="form-label">{{ price_tunnel.max_price.label }}</label>
-                {{ price_tunnel.max_price }}
-            </div>
-            <div class="col-md-4">
-                <label for="{{ price_tunnel.min_price.id_for_label }}" class="form-label">{{ price_tunnel.min_price.label }}</label>
-                {{ price_tunnel.min_price }}
-            </div>
-            <div class="col-md-4">
-                <label for="{{ price_tunnel.periodicity.id_for_label }}" class="form-label">{{ price_tunnel.periodicity.label }}</label>
-                {{ price_tunnel.periodicity }}
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Define tunnel</button>
-      </form>
-    <div class="row">
-        <div class="col-md-12">
-            {% include 'stock_chart.html' with plot=plot %}
-        </div>
-      </div>
-    <table>
-        <thead>
-            <tr>
-                <th>Datetime</th>
-                <th>Open</th>
-                <th>High</th>
-                <th>Low</th>
-                <th>Close</th>
-                <th>Volume (k)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for data in stock_data %}
-            <tr>
-                <td>{{ data.Datetime }}</td>
-                <td>R$ {{ data.Open }}</td>
-                <td>R$ {{ data.High }}</td>
-                <td>R$ {{ data.Low }}</td>
-                <td>R$ {{ data.Close }}</td>
-                <td>{{ data.Volume  }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% include 'base.html' %}
+<title>{{ ticker }}</title>
+
+<h1>{{ ticker }}</h1>
+<br/>
+
+{% include 'stock_chart/price_tunnel_form.html' %}
+{% include 'stock_chart/graph_form.html' %}
+
+{% include 'stock_chart/graph.html' %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Datetime</th>
+            <th>Open</th>
+            <th>High</th>
+            <th>Low</th>
+            <th>Close</th>
+            <th>Volume (k)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in stock_data %}
+        <tr>
+            <td>{{ data.Datetime }}</td>
+            <td>R$ {{ data.Open }}</td>
+            <td>R$ {{ data.High }}</td>
+            <td>R$ {{ data.Low }}</td>
+            <td>R$ {{ data.Close }}</td>
+            <td>{{ data.Volume  }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

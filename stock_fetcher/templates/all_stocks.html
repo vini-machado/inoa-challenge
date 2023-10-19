@@ -1,74 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Stock Table</title>
-    <style>
-        table {
-            margin-left: auto;
-            margin-right: auto;
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body>
-    <h1>Stock Table</h1>
-    {% if user.is_authenticated %}
-        <h2>Autenticado</h2>
-        <a class="nav-link" href="{% url 'logout' %}"> Logout </a>
-    {% else %}
-        <h2>Não Autenticado! Sai Daqui!!!</h2>
-    {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_table }}
-        <button type="submit">Filtrar</button>
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <th>Tickers</th>
-                <th>Tunnel Minimum</th>
-                <th>Current Price</th>
-                <th>Tunnel Maximum</th>
-                <th>Price Check Periodicity</th>
-                <th>Graphs</th>
-                <th>Cancel Monitoring</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for stock in stocks %}
-            <tr>
-                <td>{{ stock.stock.ticker }}</td>
-                <td>{{ stock.min_price }}</td>
-                <td>{{ stock.stock.current_price }}</td>
-                <td>{{ stock.max_price }}</td>
-                <td>{{ stock.periodicity }}</td>
-                <td><button onclick="redirectToStockData('{{ stock.stock.ticker }}')">More Data</button></td>
-                <td>
-                    <form method="post" action="{% url 'delete_user_stock' stock.id %}">
-                        {% csrf_token %}
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
+{% include 'base.html' %}
 
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<h1>Stock Table</h1>
 
-    <script>
-        function redirectToStockData(ticker) {
-            window.location.href = `${ticker}/` + '?interval=5m&period=5d';
-        }
-    </script>
-</body>
-</html>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_table }}
+    <button type="submit">Filtrar</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Tickers</th>
+            <th>Tunnel Minimum</th>
+            <th>Current Price</th>
+            <th>Tunnel Maximum</th>
+            <th>Price Check Periodicity</th>
+            <th>Graphs</th>
+            <th>Cancel Monitoring</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stock in stocks %}
+        <tr>
+            <td>{{ stock.stock.ticker }}</td>
+            <td>{{ stock.min_price }}</td>
+            <td>{{ stock.stock.current_price }}</td>
+            <td>{{ stock.max_price }}</td>
+            <td>{{ stock.periodicity }}</td>
+            <td><button onclick="redirectToStockData('{{ stock.stock.ticker }}')">More Data</button></td>
+            <td>
+                <form method="post" action="{% url 'delete_user_stock' stock.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    function redirectToStockData(ticker) {
+        window.location.href = `${ticker}/` + '?interval=5m&period=5d';
+    }
+</script>
