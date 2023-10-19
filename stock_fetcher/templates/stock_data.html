@@ -1,4 +1,6 @@
-{% include 'base.html' %}
+{% extends 'base.html' %}
+
+{% block content %}
 <title>{{ ticker }}</title>
 
 <h1>{{ ticker }}</h1>
@@ -9,7 +11,7 @@
 
 {% include 'stock_chart/graph.html' %}
 
-<table>
+<table class="table table-striped text-center">
     <thead>
         <tr>
             <th>Datetime</th>
@@ -33,3 +35,5 @@
         {% endfor %}
     </tbody>
 </table>
+
+{% endblock %}
