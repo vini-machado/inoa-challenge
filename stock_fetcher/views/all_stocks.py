@@ -9,10 +9,9 @@ from stock_fetcher.utils.stock_handler import StockHandler
 class StockFilterForm(forms.Form):
     tickers = forms.ModelMultipleChoiceField(
                 queryset =  Stock.objects.all(),
-                widget   = forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-                label    =  "Selecione os ativos de para monitorar"
+                widget   = forms.CheckboxSelectMultiple(),
+                label    =  ""
     )
-
 class StocksView(View):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
