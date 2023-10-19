@@ -1,19 +1,21 @@
 <form method="post">
     {% csrf_token %}
     <div class="row">
-        <div class="col-md-3">
-            <label for="{{ price_tunnel.max_price.id_for_label }}" class="form-label">{{ price_tunnel.max_price.label }}</label>
-            {{ price_tunnel.max_price }}
-        </div>
-        <div class="col-md-3">
-            <label for="{{ price_tunnel.min_price.id_for_label }}" class="form-label">{{ price_tunnel.min_price.label }}</label>
-            {{ price_tunnel.min_price }}
-        </div>
-        <div class="col-md-2">
-            <label for="{{ price_tunnel.periodicity.id_for_label }}" class="form-label">{{ price_tunnel.periodicity.label }}</label>
+        <div class="col-md-3 align-self-center form-group">
+            <label for="{{ price_tunnel.periodicity.id_for_label }}">{{ price_tunnel.periodicity.label }}</label>
             {{ price_tunnel.periodicity }}
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Define tunnel</button>
+        <div class="col-md-2 align-self-center form-group">
+            <label for="{{ price_tunnel.max_price.id_for_label }}">{{ price_tunnel.max_price.label }}</label>
+            {{ price_tunnel.max_price }}
+        </div>
+        <div class="col-md-2 align-self-center form-group">
+            <label for="{{ price_tunnel.min_price.id_for_label }}">{{ price_tunnel.min_price.label }}</label>
+            {{ price_tunnel.min_price }}
+        </div>
+        <div class="col-md-3 align-self-center">
+            <button type="submit" class="btn btn-primary mt-3">Define tunnel</button>
+        </div>
     </div>
+    <br/>
 </form>
-<br/><br/><br/>
