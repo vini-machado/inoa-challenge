@@ -1,0 +1,15 @@
+.navbar{
+  color: #135261;
+  background-color: #135261;
+}
+
+.navbar, .user-container{
+  align-items: center;
+  color: white;   
+}
+
+.scrollspy-example {
+  position: relative;
+  height: 300px;
+  overflow: auto;
+}
