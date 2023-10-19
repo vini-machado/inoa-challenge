@@ -16,12 +16,12 @@ Install dependencies
 pip install -r requirements.txt
 ```
 ## Configuration
-**Email**
+### Email
 In order to be able to send email alerts, you need to create some credentials.
 Duplicate "secrets-mock.json" file and rename it to "secrets.json" and insert correct credencials.
 
-**Database**
-To correct use built-in Django SQLite run the following command with python virtual enviroment activated
+### Database
+To correct use built-in Django SQLite run the following command with python virtual enviroment activated.
 ```bash
 python manage.py migrate
 ```
