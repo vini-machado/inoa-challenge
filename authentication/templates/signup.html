@@ -1,14 +1,31 @@
-{% include 'base.html' %}
+{% extends 'auth_base.html' %}
+
+{% block content %}
 
 <div class="container">
   {% if form.errors %}
   <p> Erro. Faça contato com administrador!</p>
   {% endif %}
-</div>
-  <h2>Sign Up</h2>
-  <form action={% url 'signup' %} method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-  <br>
+</div>  <h2 style="text-align: center;">Sign up</h2>
+
+  <form action="{% url 'signup' %}" method="post" style="display: flex; flex-direction: column;">
+    {% csrf_token %}
+    {% for field in form %}
+
+      <p class="mx-0">
+        {{ field.label_tag }}
+        <br>
+        {{ field }}
+      </p>
+      
+    {% endfor %}
+    <div class="row justify-content-center">
+      <button type="submit" class="btn btn-primary col-4">Sign Up</button>
+    </div>
+
+    <div class="row justify-content-end align-self-end">
+      <a href="{% url 'login' %}" style="color: black; text-align: center;">Login</a>
+    </div>
+
+  </form>
+{% endblock %}
