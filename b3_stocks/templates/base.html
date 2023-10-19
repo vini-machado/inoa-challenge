@@ -9,8 +9,9 @@
 </head>
 <body>
     <!-- Navbar -->
-    {% include 'navbar.html' %}
-
+    {% if 'authentication' not in request.path %}
+        {% include 'navbar.html' %}
+    {% endif %}
     <!-- Main Content -->
     <div class="container">
         {% block content %}{% endblock %}
