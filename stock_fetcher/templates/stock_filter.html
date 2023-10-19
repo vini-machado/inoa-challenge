@@ -1,0 +1,12 @@
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="row">
+        <p> Selecione os ativos de para monitorar:</p>
+        <button type="submit" class="col-4">Filtrar</button>
+    </div>
+
+    {{ form.as_p }}
+
+
+</form>

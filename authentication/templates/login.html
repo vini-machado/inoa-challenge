@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sign In</title>
-</head>
-<body>
+{% extends 'auth_base.html' %}
+
+{% block content %}
+
   <div class="container">
     {% if messages %}
       {% for message in messages %}
@@ -14,21 +12,28 @@
       {% endfor %}
     {% endif %}
   </div>
-    <h2>Sign In</h2>
+    <h2 style="text-align: center;">Sign In</h2>
     <form method="post">
         {% csrf_token %}
 
-        <div class="mb-3">
+        <div class="col-md-12">
           <label for="exampleInputEmail1" class="form-label">Username</label>
           <input type="text" class="form-control" name="username" aria-describedby="emailHelp">
         </div>
-        <div class="mb-3">
+        
+        <div class="col-md-12">
           <label for="exampleInputPassword1" class="form-label">Password</label>
           <input type="password" class="form-control" name="password">
         </div>
-        <a href="{% url 'signup' %}">Cadastro</a><br/>
-        <button type="submit" class="btn btn-primary">Submit</button>
+          <br/>
+
+          <div class="row justify-content-center">
+            <button type="submit" class="btn btn-primary col-4">Login</button>
+          </div>
+          
+        <div class="row justify-content-center align-self-end">
+          <a href="{% url 'signup' %}" style="color: black; text-align: center;">Sign Up</a>
+        </div>
       </form>
-    <br>
-</body>
-</html>
+
+{% endblock %}

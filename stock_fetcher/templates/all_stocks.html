@@ -1,38 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Stock Table</title>
-    <style>
-        table {
-            margin-left: auto;
-            margin-right: auto;
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body>
-    <h1>Stock Table</h1>
-    {% if user.is_authenticated %}
-        <h2>Autenticado</h2>
-        <a class="nav-link" href="{% url 'logout' %}"> Logout </a>
-    {% else %}
-        <h2>Não Autenticado! Sai Daqui!!!</h2>
-    {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_table }}
-        <button type="submit">Filtrar</button>
-    </form>
-    <table>
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>Stock Table</h1>
+
+<div class="col-3">
+    {% include 'stock_filter.html' %}
+</div>
+
+<div class="col-9">
+    <table class="table table-striped text-center">
         <thead>
             <tr>
                 <th>Tickers</th>
@@ -40,7 +18,7 @@
                 <th>Current Price</th>
                 <th>Tunnel Maximum</th>
                 <th>Price Check Periodicity</th>
-                <th>Graphs</th>
+                <th>Tunnel Price</th>
                 <th>Cancel Monitoring</th>
             </tr>
         </thead>
@@ -59,16 +37,18 @@
                         <button type="submit">Delete</button>
                     </form>
                 </td>
-
+    
             </tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
 
-    <script>
-        function redirectToStockData(ticker) {
-            window.location.href = `${ticker}/` + '?interval=5m&period=5d';
-        }
-    </script>
-</body>
-</html>
+
+<script>
+    function redirectToStockData(ticker) {
+        window.location.href = `${ticker}/` + '?interval=5m&period=5d';
+    }
+</script>
+
+{% endblock %}

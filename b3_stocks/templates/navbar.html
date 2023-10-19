@@ -1,0 +1,17 @@
+{% load static %}
+<nav class="navbar">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <img src="{% static 'images/inoa-logo.png' %}" height="40" class="d-inline-block align-top">
+    </a>
+    
+    {% if user.is_authenticated %}
+    <div id="user-container" style="display: flex !important;">
+      <p class="mb-0 mr-3">Hello, {{ user.username }}</p>
+      <a class="light" href="{% url 'logout' %}">
+        <i class="fas fa-sign-out-alt"></i>
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</nav>

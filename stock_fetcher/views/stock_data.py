@@ -15,19 +15,21 @@ from monitoring.models import UserStock
 class TimeForm(forms.Form):
     interval = forms.ChoiceField(choices = INTERVALS,
                                        widget=forms.Select(attrs={'class': 'form-select'}),
-                                       label="Select Time Interval")
+                                       label="Graph Time Interval")
 
     period   = forms.ChoiceField(choices = PERIODS,
                                     widget=forms.Select(attrs={'class': 'form-select'}),
-                                    label="Select Time Period")
+                                    label="Graph Time Period")
     
 class TunnelPriceForm(forms.Form):
-    max_price     = forms.DecimalField(label="Select Tunnel Maximum Price")
-    min_price     = forms.DecimalField(label="Select Tunnel Minimum Price")
+    max_price     = forms.DecimalField(label="Tunnel Maximum Price",
+                                    widget=forms.NumberInput(attrs={'class': 'form-control'}),)
+    min_price     = forms.DecimalField(label="Tunnel Minimum Price",
+                                    widget=forms.NumberInput(attrs={'class': 'form-control'}),)
 
     periodicity   = forms.ChoiceField(choices = INTERVALS,
                                 widget=forms.Select(attrs={'class': 'form-select'}),
-                                label="Select Price Check Period")
+                                label="Price Check Periodicity")
 
 
 class StockDataView(View):
