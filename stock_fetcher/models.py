@@ -15,6 +15,9 @@ class Stock(models.Model):
     ticker        = models.CharField(max_length=7, unique=True)
     current_price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
+    class Meta:
+        ordering = ['ticker']
+
     def __str__(self):
         return self.ticker
 
